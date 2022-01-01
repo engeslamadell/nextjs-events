@@ -5,6 +5,7 @@ import ResultTitle from "../../components/events/results-title";
 import Button from "../../components/ui/button";
 import ErrorAlert from "../../components/ui/error-alert";
 import useSWR from "swr";
+import Head from "next/head";
 
 // this page ended up using client side data fetch using useSWR and also commented SSR as reference
 
@@ -33,13 +34,35 @@ function FilteredEventsPage() {
     }
   }, [data]);
 
+  let pageHeadData = (
+    <Head>
+      <title>Filtered Events</title>
+      <meta name="description" content={`All Events of filtered events`} />
+    </Head>
+  );
+
   if (!loadedEvents) {
-    return <p className="center">Loading...</p>;
+    return (
+      <Fragment>
+        {pageHeadData}
+        <p className="center">Loading...</p>
+      </Fragment>
+    );
   }
 
   const [filteredYear, filteredMonth] = filteredData;
   const numYear = +filteredYear;
   const numMonth = +filteredMonth;
+
+  pageHeadData = (
+    <Head>
+      <title>Filtered Events</title>
+      <meta
+        name="description"
+        content={`All Events fot ${numMonth}/${numYear}`}
+      />
+    </Head>
+  );
 
   if (
     isNaN(numYear) ||
@@ -52,6 +75,7 @@ function FilteredEventsPage() {
   ) {
     return (
       <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p>Invalid filters please adjust your values</p>
         </ErrorAlert>
@@ -88,6 +112,7 @@ function FilteredEventsPage() {
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p>No events found for the chosen filter!</p>
         </ErrorAlert>
@@ -103,6 +128,7 @@ function FilteredEventsPage() {
 
   return (
     <Fragment>
+      {pageHeadData}
       <ResultTitle date={date} />
       <EventList items={filteredEvents} />
     </Fragment>
